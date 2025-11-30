@@ -12,7 +12,19 @@ class Request
     public function __construct()
     {
         $this->method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $this->uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        
+        // Remove base path dari URI
+        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        
+        // Hilangkan base path jika ada
+        $basePath = '/digital-library-api/public';
+        if (str_starts_with($uri, $basePath)) {
+            $uri = substr($uri, strlen($basePath));
+        }
+        
+        // Pastikan selalu diawali /
+        $this->uri = $uri ?: '/';
+        
         $this->query = $_GET;
         $this->params = [];
         $this->body = $this->parseBody();
