@@ -14,42 +14,25 @@ use Library\Http\Response;
 use Library\Http\Router;
 use Library\Exceptions\LibraryException;
 
-// Enable error reporting (untuk development)
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-
 // CORS Headers
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// Handle preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
 try {
-    // Initialize dependencies (Simple DI Container)
     $db = Database::getInstance();
-    
-    // Initialize repositories
     $bookRepository = new BookRepository($db);
     $userRepository = new UserRepository($db);
-    
-    // Initialize service
     $libraryService = new LibraryService($bookRepository, $userRepository);
-    
-    // Initialize controllers
     $bookController = new BookController($libraryService, $bookRepository);
     $userController = new UserController($libraryService, $userRepository);
     
-    // Initialize router
     $router = new Router();
-    
-    // ============================================
-    // DEFINE ROUTES
-    // ============================================
     
     // Health check
     $router->get('/api/health', function(Request $req) {
@@ -108,11 +91,8 @@ try {
     $router->post('/api/users/{id}/borrow/{bookId}', [$userController, 'borrow']);
     $router->post('/api/users/{id}/return/{bookId}', [$userController, 'returnBook']);
     
-    // Create request and dispatch
     $request = new Request();
     $response = $router->dispatch($request);
-    
-    // Send response
     $response->send();
     
 } catch (LibraryException $e) {

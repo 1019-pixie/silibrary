@@ -1,6 +1,5 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /digital-library-api/public/
     
     # Route semua request ke index.php
     RewriteCond %{REQUEST_FILENAME} !-f
