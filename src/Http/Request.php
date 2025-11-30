@@ -1,4 +1,6 @@
 <?php
+// src/Http/Request.php - FIXED VERSION
+
 namespace Library\Http;
 
 class Request
@@ -13,16 +15,24 @@ class Request
     {
         $this->method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         
-        // Remove base path dari URI
+        // Get URI and remove query string
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         
-        // Hilangkan base path jika ada
-        $basePath = '/digital-library-api/public';
-        if (str_starts_with($uri, $basePath)) {
-            $uri = substr($uri, strlen($basePath));
+        // Remove base path for Laragon/XAMPP
+        // Example: /digital-library-api/public/api/books -> /api/books
+        $basePaths = [
+            '/digital-library-api/public',
+            '/digital-library-api',
+        ];
+        
+        foreach ($basePaths as $basePath) {
+            if (str_starts_with($uri, $basePath)) {
+                $uri = substr($uri, strlen($basePath));
+                break;
+            }
         }
         
-        // Pastikan selalu diawali /
+        // Ensure starts with /
         $this->uri = $uri ?: '/';
         
         $this->query = $_GET;
@@ -42,18 +52,31 @@ class Request
         return $_POST;
     }
 
-    public function getMethod(): string { return $this->method; }
-    public function getUri(): string { return $this->uri; }
+    public function getMethod(): string 
+    { 
+        return $this->method; 
+    }
+    
+    public function getUri(): string 
+    { 
+        return $this->uri; 
+    }
 
+    // FIXED: Tambahkan ? untuk nullable parameter
     public function getQuery(?string $key = null, mixed $default = null): mixed
     {
-        if ($key === null) return $this->query;
+        if ($key === null) {
+            return $this->query;
+        }
         return $this->query[$key] ?? $default;
     }
 
+    // FIXED: Tambahkan ? untuk nullable parameter
     public function getBody(?string $key = null, mixed $default = null): mixed
     {
-        if ($key === null) return $this->body;
+        if ($key === null) {
+            return $this->body;
+        }
         return $this->body[$key] ?? $default;
     }
 
@@ -65,5 +88,10 @@ class Request
     public function getParam(string $key, mixed $default = null): mixed
     {
         return $this->params[$key] ?? $default;
+    }
+    
+    public function getParams(): array
+    {
+        return $this->params;
     }
 }
