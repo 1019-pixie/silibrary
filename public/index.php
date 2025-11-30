@@ -108,12 +108,6 @@ try {
     $router->post('/api/users/{id}/borrow/{bookId}', [$userController, 'borrow']);
     $router->post('/api/users/{id}/return/{bookId}', [$userController, 'returnBook']);
     
-    $router->get('/', function(Request $req) {
-    return Response::json([
-        'message' => 'Welcome to Digital Library API',
-        'documentation' => '/api',
-        'health_check' => '/api/health'
-        
     // Create request and dispatch
     $request = new Request();
     $response = $router->dispatch($request);
