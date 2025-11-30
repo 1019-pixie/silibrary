@@ -1,12 +1,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /digital-library-api/
     
-    # Redirect to public folder
-    RewriteCond %{REQUEST_URI} !^/public/
+    # Redirect ke public folder
+    RewriteCond %{REQUEST_URI} !^/digital-library-api/public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
-
-<FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
